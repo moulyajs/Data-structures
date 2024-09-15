@@ -1,24 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 void inToPost();
-void push(char);
-char pop();
+void push(int);
+int pop();
 int isEmpty();
 void inToPost();
 int space(char);
 void display();
+int post_eval();
 int precedence(char);
 #define MAX 100
-char stack[MAX];
+int stack[MAX];
 char infix[MAX], postfix[MAX];
 int top = -1;
 int main()
 {
+    int result;
     printf("enter the infix expression\n");
     gets(infix);
     inToPost();
+    result = post_eval();
     display();
+    printf("the result of postfix of expression %d\n", result);
 }
 void inToPost()
 {
@@ -95,7 +100,7 @@ int space(char c)
     else
         return 0;
 }
-void push(char c)
+void push(int c)
 {
     if (top == MAX - 1)
     {
@@ -105,7 +110,7 @@ void push(char c)
     top++;
     stack[top] = c;
 }
-char pop()
+int pop()
 {
     char c;
     if (top == -1)
@@ -125,4 +130,39 @@ int isEmpty()
     }
     else
         return 0;
+}
+int post_eval()
+{
+    int i, a, b;
+    for (i = 0; i < strlen(postfix); i++)
+    {
+        if (postfix[i] >= '0' && postfix[i] <= '9')
+        {
+            push(postfix[i] - '0');
+        }
+        else
+        {
+            a = pop();
+            b = pop();
+            switch (postfix[i])
+            {
+            case '+':
+                push(b + a);
+                break;
+            case '-':
+                push(b - a);
+                break;
+            case '/':
+                push(b / a);
+                break;
+            case '*':
+                push(b * a);
+                break;
+            case '^':
+                push(pow(b, a));
+                break;
+            }
+        }
+    }
+    return pop();
 }
